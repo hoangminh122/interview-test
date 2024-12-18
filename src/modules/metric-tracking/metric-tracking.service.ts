@@ -9,13 +9,16 @@ import { CreateMetricDto } from './dto/create-metric.dto';
 import { Brackets, DeepPartial } from 'typeorm';
 import {
     METRIC_DISTANCE_UNIT,
+    METRIC_TEMPERATURE_UNIT,
     METRIC_TYPE,
 } from 'src/utils/enums/tracking.enum';
 import { Pagination } from 'src/utils/interfaces/success-response';
 import { BASE_ENTITY_DOMAIN, TABLE_NAMES } from 'src/utils/constants/common.constant';
-import { GetMetricDto } from './dto/get-metric.dto';
+import { GetMetricDto, GetMetricForChartDto } from './dto/get-metric.dto';
 import { IAliasMapping } from 'src/utils/customer-select-query-builder';
 import { MetricTrackingImplementService } from './metric-tracking.implement';
+import { MetricLibService } from '@app/metric-lib/metric-lib.service';
+import { IMetricForChart } from 'src/utils/interfaces/model.interface';
 
 @Injectable()
 export class MetricTrackingService extends LoggerService {
@@ -23,14 +26,15 @@ export class MetricTrackingService extends LoggerService {
         private model: Repository,
         @Inject(REQUEST) public readonly req: Request,
         eventEmitter: EventEmitter2,
-        private metricTrackingImplementService: MetricTrackingImplementService
+        private metricTrackingImplementService: MetricTrackingImplementService,
+        // private metricLibService: MetricLibService,
     ) {
         super(req, eventEmitter);
     }
 
     async create(
         payload: CreateMetricDto,
-        userIdLogin: string,
+        userIdLoginFake: string,
     ): Promise<DeepPartial<Metric>> {
         this.log(
             `[${MetricTrackingService.name}][create]: create => ${JSON.stringify(payload)}`,
@@ -45,7 +49,7 @@ export class MetricTrackingService extends LoggerService {
         const result = await this.model.metricRepository.insertOne({
             ...payload,
             type,
-            userId: userId ?? userIdLogin,
+            userId: userId ?? userIdLoginFake,
             createdBy: userId,
         });
         return result;
@@ -53,28 +57,57 @@ export class MetricTrackingService extends LoggerService {
 
     async getMany(
         queryDto: GetMetricDto,
-        userId: string,
+        userIdLoginFake: string,
     ): Promise<{ data: Metric[]; paging: Pagination }> {
         this.log(
-            `[${MetricTrackingService.name}][getMany]: getMany => ${JSON.stringify(queryDto)} by ${userId}`,
+            `[${MetricTrackingService.name}][getMany]: getMany => ${JSON.stringify(queryDto)} by ${userIdLoginFake}`,
         );
-        const query = queryDto;
+        const { unitDistance, unitTemperature } = queryDto;
 
         const aliasMapping: IAliasMapping = {
             id: `${TABLE_NAMES.METRIC}.${BASE_ENTITY_DOMAIN.BASE_COLUMNS.ID}`,
             type: `${TABLE_NAMES.METRIC}.${BASE_ENTITY_DOMAIN.METRIC_COLUMNS.TYPE}`,
         };
 
-        const builder = this.metricTrackingImplementService.generateQueryBuilder(query, aliasMapping)
+        const builder = this.metricTrackingImplementService.generateQueryBuilder(queryDto, aliasMapping)
 
-        const parallelProcesses: [Promise<number>, Promise<Metric[]>] = [
+        let [metrics, totalItem] = await builder.getManyAndCount()
+
+        if (unitDistance || unitTemperature) {
+            metrics = this.metricTrackingImplementService.convertToUnit(metrics, unitDistance, unitTemperature)
+        }
+        return builder.paginate(metrics, totalItem);
+    }
+
+    async getManyForChart(
+        queryDto: GetMetricForChartDto,
+        userIdLoginFake: string,
+    ) {
+        this.log(
+            `[${MetricTrackingService.name}][getMany]: getMany => ${JSON.stringify(queryDto)} by ${userIdLoginFake}`,
+        );
+        let { unitDistance, unitTemperature } = queryDto;
+
+        const aliasMapping: IAliasMapping = {
+            id: `${TABLE_NAMES.METRIC}.${BASE_ENTITY_DOMAIN.BASE_COLUMNS.ID}`,
+            type: `${TABLE_NAMES.METRIC}.${BASE_ENTITY_DOMAIN.METRIC_COLUMNS.TYPE}`,
+        };
+
+        const builder = this.metricTrackingImplementService.generateQueryBuilder(queryDto, aliasMapping)
+
+        const parallelProcesses: [Promise<number>, Promise<IMetricForChart[]>] = [
             builder.getCount(),
-            builder.getMany(),
+            builder.getRawMany<IMetricForChart>(),
         ];
 
-        const [totalItem, transactionHistory] =
-            await Promise.all(parallelProcesses);
+        // Calc metadata and attach to response
+        const [totalItem, metrics] = await Promise.all(parallelProcesses);
+        // Set default unit if user not input
+        unitDistance = unitDistance ? unitDistance : METRIC_DISTANCE_UNIT.METER;
+        unitTemperature = unitTemperature ? unitTemperature : METRIC_TEMPERATURE_UNIT.K;
 
-        return builder.paginate(transactionHistory, totalItem);
+        const results = this.metricTrackingImplementService.convertToUnitForChart(metrics, unitDistance, unitTemperature)
+        return builder.paginate(results, totalItem);
     }
 }
+

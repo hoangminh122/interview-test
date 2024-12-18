@@ -227,9 +227,9 @@ export class QueryHandlerBuilder<
   }
 
   paginate(
-    data: Array<Entity>,
+    data: Array<Entity> | Array<any>,
     totalItem: number,
-  ): { data: Array<Entity>; paging: Pagination } {
+  ): { data: Array<Entity> | Array<any>; paging: Pagination } {
     this.paging.totalItem = totalItem;
     this.paging.totalPage = Math.ceil(totalItem / this.paging.maxPerPage);
 

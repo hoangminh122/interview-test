@@ -11,7 +11,7 @@ import { logger } from 'nestjs-i18n';
 import { IErrorResponse } from 'src/utils/response/error-response';
 
 dotenvConfig({ path: '.env' });
-@Catch(HttpException)
+@Catch(HttpExceptionFilter)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();

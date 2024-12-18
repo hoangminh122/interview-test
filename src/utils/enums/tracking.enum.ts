@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-export enum METRIC_TEMPERATURE_UNIT {
+export enum METRIC_DISTANCE_UNIT {
   METER = 'Meter',
   CENTIMETER = 'centimeter',
   INCH = 'inch',
@@ -8,7 +8,7 @@ export enum METRIC_TEMPERATURE_UNIT {
   YARD = 'yard',
 }
 
-export enum METRIC_DISTANCE_UNIT {
+export enum METRIC_TEMPERATURE_UNIT {
   C = 'C',
   F = 'F',
   K = 'K',
