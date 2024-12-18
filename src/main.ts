@@ -12,6 +12,16 @@ export const APP_AUTH_FORMAT = 'JWT';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  // Exception Filter
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const options = new DocumentBuilder()
     .setTitle('api-docs')

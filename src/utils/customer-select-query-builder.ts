@@ -188,7 +188,7 @@ export class QueryHandlerBuilder<
         const mappedFieldName = this.aliasMapping[fieldName];
 
         if (!mappedFieldName) {
-          throw new BadRequestException(SYSTEM_ERROR_CODE.INV.INV_ERR_007);
+          throw new BadRequestException("Invalid parameter");
         }
 
         this.addOrderBy(
@@ -227,9 +227,9 @@ export class QueryHandlerBuilder<
   }
 
   paginate(
-    data: Array<Entity>,
+    data: Array<Entity> | Array<any>,
     totalItem: number,
-  ): { data: Array<Entity>; paging: Pagination } {
+  ): { data: Array<Entity> | Array<any>; paging: Pagination } {
     this.paging.totalItem = totalItem;
     this.paging.totalPage = Math.ceil(totalItem / this.paging.maxPerPage);
 
@@ -237,7 +237,7 @@ export class QueryHandlerBuilder<
       this.paging.pageNumber > this.paging.totalPage &&
       this.paging.totalPage !== 0
     ) {
-      throw new BadRequestException(SYSTEM_ERROR_CODE.INV.INV_ERR_009);
+      throw new BadRequestException("Page number invalid");
     }
 
     return {

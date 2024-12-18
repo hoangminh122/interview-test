@@ -34,7 +34,7 @@ export class RepositoryBase<Entity extends ObjectLiteral> {
         column.propertyName === BASE_ENTITY_DOMAIN.BASE_COLUMNS.DELETED_AT,
     );
     if (!alias && hasDeletedAtColumn) {
-      throw new InternalServerErrorException(SYSTEM_ERROR_CODE.INV.INV_ERR_010);
+      throw new InternalServerErrorException("Alias is required for createQueryBuilder");
     }
     if (hasDeletedAtColumn) {
       queryBuilder.where(

@@ -8,6 +8,7 @@ import {
   IAliasMapping,
   QueryHandlerBuilder,
 } from 'src/utils/customer-select-query-builder';
+import { IMetricForChart } from 'src/utils/interfaces/model.interface';
 
 @Injectable()
 export class MetricRepository extends RepositoryBase<Metric> {
@@ -18,13 +19,13 @@ export class MetricRepository extends RepositoryBase<Metric> {
     super(repository);
   }
 
-  createCustomQueryBuilder(
+  createCustomQueryBuilder<Entity>(
     alias: string,
     query: GetMetricDto = null,
     mapping: IAliasMapping = null,
   ) {
     return new QueryHandlerBuilder<Metric, GetMetricDto>(
-      this.createQueryBuilder(),
+      this.createQueryBuilder(alias),
       query,
       mapping,
     );
