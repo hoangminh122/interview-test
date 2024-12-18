@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - cache:/data
+
+  nodejs-app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: nodejs-app
+    env_file:
+      - .env
+    ports:
+      - '4000:4000'
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_ENABLE=${REDIS_ENABLE}
+      # NODE_ENV: production  # Uncomment if needed
+    depends_on:
+      - db
+      - cache
+    # volumes:
+    #   - ./nodejs-logs:/app/logs
+
+  db:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - '3307:3306'
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  elasticsearch_data:
+    driver: local
+  db:
+    driver: local
+  cache:
+    driver: local

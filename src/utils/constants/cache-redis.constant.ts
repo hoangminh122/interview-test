@@ -1,0 +1,14 @@
+export const CACHE_PREFIX = 'WMT_';
+export const CACHE_MODULE = {
+  AUTH: `${CACHE_PREFIX}AUTH_`,
+  INTEGRATION: `${CACHE_PREFIX}INTEGRATION_`,
+};
+
+export const USER_CACHE = {
+  LOGGED_IN: 'LOGGED_IN',
+  BLACK_LIST_TOKEN: 'BLACK_LIST_TOKEN',
+};
+
+export const INTEGRATION_CACHE = {
+  COUNTRIES: 'COUNTRIES',
+};
