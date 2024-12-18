@@ -22,6 +22,10 @@
 
 4: if dev run code at local doing on run:
 
+- please delete or command
+  synchronize: true,
+  dropSchema: true
+  from \src\utils\configs\typeorm.config.ts
 - npm run start:dev
 
 5. Data for testing:

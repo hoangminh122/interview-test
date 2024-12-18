@@ -14,7 +14,7 @@ export const TYPEORM_CONFIG = {
   password: ConfigEnvironmentService.getIns().get('MYSQL_PASSWORD') || '',
   database: ConfigEnvironmentService.getIns().get('MYSQL_DATABASE') || '',
   entities: ['dist/**/*.entity{.ts,.js}', 'dist/**/*/*.entity{.ts,.js}'],
-  logging: true,
+  // logging: true,
   synchronize: true,
   dropSchema: true,
   extra: { charset: 'utf8mb4' },

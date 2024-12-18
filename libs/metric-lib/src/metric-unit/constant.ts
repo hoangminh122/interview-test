@@ -9,7 +9,7 @@ export enum METRIC_TYPE {
 }
 
 export enum METRIC_DISTANCE_UNIT {
-  METER = 'Meter',
+  METER = 'meter',
   CENTIMETER = 'centimeter',
   INCH = 'inch',
   FEET = 'feet',
