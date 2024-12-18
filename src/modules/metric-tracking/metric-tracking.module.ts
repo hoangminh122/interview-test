@@ -5,10 +5,16 @@ import { Repository } from 'src/repositories/repository';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { RepositoryModule } from 'src/repositories/repository.module';
 import { ConfigEnvironmentModule } from '../base/config/config-environment.base.module';
+import { MetricTrackingImplementService } from './metric-tracking.implement';
 
 @Module({
     imports: [EventEmitterModule, RepositoryModule, ConfigEnvironmentModule],
     controllers: [MetricTrackingController],
-    providers: [MetricTrackingService, Repository, EventEmitter2],
+    providers: [
+        MetricTrackingService,
+        Repository,
+        EventEmitter2,
+        MetricTrackingImplementService,
+    ],
 })
 export class MetricTrackingModule { }

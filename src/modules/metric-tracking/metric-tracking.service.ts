@@ -15,6 +15,7 @@ import { Pagination } from 'src/utils/interfaces/success-response';
 import { BASE_ENTITY_DOMAIN, TABLE_NAMES } from 'src/utils/constants/common.constant';
 import { GetMetricDto } from './dto/get-metric.dto';
 import { IAliasMapping } from 'src/utils/customer-select-query-builder';
+import { MetricTrackingImplementService } from './metric-tracking.implement';
 
 @Injectable()
 export class MetricTrackingService extends LoggerService {
@@ -22,6 +23,7 @@ export class MetricTrackingService extends LoggerService {
         private model: Repository,
         @Inject(REQUEST) public readonly req: Request,
         eventEmitter: EventEmitter2,
+        private metricTrackingImplementService: MetricTrackingImplementService
     ) {
         super(req, eventEmitter);
     }
@@ -63,25 +65,7 @@ export class MetricTrackingService extends LoggerService {
             type: `${TABLE_NAMES.METRIC}.${BASE_ENTITY_DOMAIN.METRIC_COLUMNS.TYPE}`,
         };
 
-        const builder = await this.model.metricRepository.createCustomQueryBuilder(
-            `${TABLE_NAMES.METRIC}`,
-            query,
-            aliasMapping,
-        );
-
-        //
-        const typeQuery = query[`type`];
-
-        if (typeQuery) {
-            builder.andWhere(
-                new Brackets((qb) => {
-                    qb.orWhere(`${builder.alias}.type = :type`, {
-                        [`type`]: typeQuery,
-                    });
-                }),
-            );
-        }
-
+        const builder = this.metricTrackingImplementService.generateQueryBuilder(query, aliasMapping)
 
         const parallelProcesses: [Promise<number>, Promise<Metric[]>] = [
             builder.getCount(),
