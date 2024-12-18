@@ -15,8 +15,8 @@ export const TYPEORM_CONFIG = {
   database: ConfigEnvironmentService.getIns().get('MYSQL_DATABASE') || '',
   entities: ['dist/**/*.entity{.ts,.js}', 'dist/**/*/*.entity{.ts,.js}'],
   logging: true,
-  // synchronize: true,
-  // dropSchema: true,
+  synchronize: true,
+  dropSchema: true,
   extra: { charset: 'utf8mb4' },
 } as TypeOrmModuleOptions;
 
