@@ -5,7 +5,7 @@ import { ENDPOINT_PATH } from 'src/utils/constants/endpoint-path.constant';
 
 import { MetricTrackingService } from './metric-tracking.service';
 import { CreateMetricDto } from './dto/create-metric.dto';
-import { GetMetricDto } from './dto/get-metric.dto';
+import { GetMetricDto, GetMetricForChartDto } from './dto/get-metric.dto';
 import { UserLoginFakeDto } from './dto/user-login-fake.dto';
 
 @ApiTags(ENDPOINT_PATH.METRIC_TRACKING.BASE)
@@ -35,6 +35,19 @@ export class MetricTrackingController extends BaseController {
         @Param() userLoginFakeDto: UserLoginFakeDto,
     ) {
         const { data, paging } = await this.metricTrackingService.getMany(
+            queryDto,
+            userLoginFakeDto.userIdLoginFake
+        );
+        return this.pagingResponse(data, paging);
+    }
+
+    @Get(`${ENDPOINT_PATH.METRIC_TRACKING.CHART}${ENDPOINT_PATH.BASE.USER_ID_LOGIN_FAKE}`)
+    @UsePipes(new ValidationPipe())
+    async getManyForChart(
+        @Query() queryDto: GetMetricForChartDto,
+        @Param() userLoginFakeDto: UserLoginFakeDto,
+    ) {
+        const { data, paging } = await this.metricTrackingService.getManyForChart(
             queryDto,
             userLoginFakeDto.userIdLoginFake
         );
