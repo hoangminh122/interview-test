@@ -12,6 +12,7 @@ export class GetMetricDto extends PaginationQuery {
     default: METRIC_TYPE.DISTANCE,
     enum: METRIC_TYPE,
   })
+  @IsOptional()
   @IsEnum(METRIC_TYPE, { each: false })
   @IsNotEmpty()
   type: METRIC_TYPE;
