@@ -6,7 +6,7 @@ import { Brackets } from 'typeorm';
 import { IAliasMapping, QueryHandlerBuilder } from 'src/utils/customer-select-query-builder';
 import { METRIC_DISTANCE_UNIT, METRIC_TEMPERATURE_UNIT, METRIC_TYPE } from 'src/utils/enums/tracking.enum';
 import { Metric } from 'src/repositories/entities';
-import { MetricLibService } from 'libs/metric-lib/src/metric-lib.service';
+import { MetricLibService } from '@app/metric-lib/metric-lib.service';
 import { SORT_DIRECTIONS } from 'src/utils/enums/common.enum';
 import * as _ from 'lodash'
 import { IMetricForChart } from 'src/utils/interfaces/model.interface';
