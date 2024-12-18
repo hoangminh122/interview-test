@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateMetricDto {
     @ApiProperty()
-    @IsString()
+    @IsNumber()
     value: number;
 
     @ApiProperty()
@@ -16,6 +16,6 @@ export class CreateMetricDto {
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsString()
+    @IsUUID()
     userId: string;
 }
