@@ -19,9 +19,6 @@ export class MetricTrackingImplementService {
         private metricDistanceService: MetricLibService,
         private metricTemperatureService: MetricLibService
     ) {
-        // Set instance
-        this.metricDistanceService.setInsDefault(METRIC_TYPE.DISTANCE);
-        this.metricTemperatureService.setInsDefault(METRIC_TYPE.TEMPERATURE)
     }
 
     generateQueryBuilder(query: GetMetricDto, aliasMapping: IAliasMapping) {
@@ -53,11 +50,13 @@ export class MetricTrackingImplementService {
         return data.map(item => {
             const itemNew = item;
             if (item.type === METRIC_TYPE.DISTANCE && unitDistance) {
+                this.metricDistanceService.setInsDefault(METRIC_TYPE.DISTANCE);
                 itemNew.value = this.metricDistanceService.executeValue(item.value, { unitFrom: item.unit as METRIC_DISTANCE_UNIT, unitTo: unitDistance })
                 itemNew.unit = unitDistance;
             }
             if (item.type === METRIC_TYPE.TEMPERATURE && unitTemperature) {
-                itemNew.value = this.metricTemperatureService.executeValue(item.value, { unitFrom: item.unit as METRIC_DISTANCE_UNIT, unitTo: unitTemperature })
+                this.metricTemperatureService.setInsDefault(METRIC_TYPE.TEMPERATURE)
+                itemNew.value = this.metricTemperatureService.executeValue(item.value, { unitFrom: item.unit as METRIC_TEMPERATURE_UNIT, unitTo: unitTemperature })
                 itemNew.unit = unitTemperature;
             }
             return itemNew;
@@ -70,11 +69,13 @@ export class MetricTrackingImplementService {
             const unitArray = itemNew.units.split(",");
             const unitLastest = _.last(unitArray)
             if (item.type === METRIC_TYPE.DISTANCE && unitDistance) {
+                this.metricDistanceService.setInsDefault(METRIC_TYPE.DISTANCE);
                 itemNew.value = this.metricDistanceService.executeValue(item.value, { unitFrom: unitLastest as METRIC_DISTANCE_UNIT, unitTo: unitDistance })
                 itemNew.unit = unitDistance;
             }
             if (item.type === METRIC_TYPE.TEMPERATURE && unitTemperature) {
-                itemNew.value = this.metricTemperatureService.executeValue(item.value, { unitFrom: unitLastest as METRIC_DISTANCE_UNIT, unitTo: unitTemperature })
+                this.metricTemperatureService.setInsDefault(METRIC_TYPE.TEMPERATURE)
+                itemNew.value = this.metricTemperatureService.executeValue(item.value, { unitFrom: unitLastest as METRIC_TEMPERATURE_UNIT, unitTo: unitTemperature })
                 itemNew.unit = unitTemperature;
             }
 

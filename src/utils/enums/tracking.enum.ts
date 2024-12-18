@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 
 export enum METRIC_DISTANCE_UNIT {
-  METER = 'Meter',
+  METER = 'meter',
   CENTIMETER = 'centimeter',
   INCH = 'inch',
   FEET = 'feet',
